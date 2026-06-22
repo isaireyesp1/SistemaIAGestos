@@ -1,6 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { Camera } from "@mediapipe/camera_utils";
-import { createHands } from "../../services/mediapipe.service";
 import DancingCat from "../Pets/DancingCat";
 
 interface Props {
@@ -13,19 +11,28 @@ export default function GestureDetector({ video }: Props) {
   const [catVisible, setCatVisible] = useState(false);
 
   const lastX = useRef<number | null>(null);
+  const actionLock = useRef(false);
 
   useEffect(() => {
     if (!video) return;
 
-    const hands = createHands();
+    const hands = new (window as any).Hands({
+      locateFile: (file: string) =>
+        `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`,
+    });
 
-    hands.onResults((results) => {
+    hands.setOptions({
+      maxNumHands: 1,
+      modelComplexity: 1,
+      minDetectionConfidence: 0.7,
+      minTrackingConfidence: 0.7,
+    });
+
+    hands.onResults((results: any) => {
       const canvas = canvasRef.current;
-
       if (!canvas) return;
 
       const ctx = canvas.getContext("2d");
-
       if (!ctx) return;
 
       canvas.width = video.videoWidth;
@@ -36,42 +43,59 @@ export default function GestureDetector({ video }: Props) {
       if (!results.multiHandLandmarks?.length) return;
 
       const landmarks = results.multiHandLandmarks[0];
-
       const wrist = landmarks[0];
 
       const currentX = wrist.x;
 
-      if (lastX.current !== null) {
-        const diff = Math.abs(currentX - lastX.current);
+      // =========================
+      // ✌️ GESTO PAZ (FOTO)
+      // =========================
+      const indexUp = landmarks[8].y < landmarks[6].y;
+      const middleUp = landmarks[12].y < landmarks[10].y;
+      const ringDown = landmarks[16].y > landmarks[14].y;
+      const pinkyDown = landmarks[20].y > landmarks[18].y;
 
-        if (diff > 0.08) {
+      const peaceGesture =
+        indexUp && middleUp && ringDown && pinkyDown;
+
+      if (peaceGesture && !actionLock.current) {
+        actionLock.current = true;
+
+        capturePhoto(video);
+
+        setTimeout(() => {
+          actionLock.current = false;
+        }, 1500);
+      }
+
+      // =========================
+      // 👋 SWIPE (GATO)
+      // SOLO si NO hay gesto
+      // =========================
+      const isHandGestureActive = indexUp || middleUp;
+
+      if (
+        lastX.current !== null &&
+        !actionLock.current &&
+        !peaceGesture &&
+        !isHandGestureActive
+      ) {
+        const diff = currentX - lastX.current;
+
+        // 🔥 dirección izquierda/derecha
+        if (Math.abs(diff) > 0.06) {
           setCatVisible(true);
 
           setTimeout(() => {
             setCatVisible(false);
-          }, 2000);
+          }, 1200);
         }
       }
 
       lastX.current = currentX;
-
-      const indexTip = landmarks[8];
-      const middleTip = landmarks[12];
-      const ringTip = landmarks[16];
-      const pinkyTip = landmarks[20];
-
-      const peaceGesture =
-        indexTip.y < landmarks[6].y &&
-        middleTip.y < landmarks[10].y &&
-        ringTip.y > landmarks[14].y &&
-        pinkyTip.y > landmarks[18].y;
-
-      if (peaceGesture) {
-        capturePhoto(video);
-      }
     });
 
-    const camera = new Camera(video, {
+    const camera = new (window as any).Camera(video, {
       onFrame: async () => {
         await hands.send({ image: video });
       },
@@ -84,23 +108,20 @@ export default function GestureDetector({ video }: Props) {
 
   const capturePhoto = (video: HTMLVideoElement) => {
     const canvas = document.createElement("canvas");
-
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-
     const ctx = canvas.getContext("2d");
 
     if (!ctx) return;
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
 
     ctx.drawImage(video, 0, 0);
 
     const image = canvas.toDataURL("image/png");
 
     const link = document.createElement("a");
-
     link.href = image;
     link.download = `photo-${Date.now()}.png`;
-
     link.click();
   };
 

@@ -3,19 +3,27 @@ interface Props {
 }
 
 export default function DancingCat({ visible }: Props) {
-  if (!visible) return null;
-
   return (
-    <img
-       src="https://media.giphy.com/media/ICOgUNjpvO0PC/giphy.gif"
-      alt="cat"
+    <div
       style={{
-        position: "absolute",
-        right: 20,
-        bottom: 20,
-        width: 180,
-        zIndex: 999,
+        position: "fixed",
+        top: 100,
+        left: 100,
+        zIndex: 99999,
+        background: "white",
+        padding: 20,
+        border: "2px solid red",
       }}
-    />
+    >
+      <h2>GATO TEST</h2>
+
+      <img
+        src="./200.gif"
+        alt="cat"
+        style={{
+          width: 250,
+        }}
+      />
+    </div>
   );
 }

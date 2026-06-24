@@ -1,17 +1,21 @@
 export type PuzzlePiece = {
   id: number;
 
-  // posición actual
+  // posición actual (drag)
   x: number;
   y: number;
 
-  // posición correcta
+  // posición correcta (snap target)
   correctX: number;
   correctY: number;
 
-  // tamaño de la pieza en grid
+  // posición en grid para recorte visual
+  row: number;
+  col: number;
+
+  // tamaño de cada pieza
   size: number;
 
-  // imagen completa (puede ser recortada después)
+  // imagen base
   image: string;
 };

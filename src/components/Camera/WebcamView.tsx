@@ -9,16 +9,20 @@ export default function WebcamView({ onReady }: Props) {
 
   useEffect(() => {
     const startCamera = async () => {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-      });
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+        });
 
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
 
-        videoRef.current.onloadedmetadata = () => {
-          onReady(videoRef.current!);
-        };
+          videoRef.current.onloadedmetadata = () => {
+            onReady(videoRef.current!);
+          };
+        }
+      } catch (error) {
+        console.error("Error acceso cámara:", error);
       }
     };
 
@@ -26,15 +30,54 @@ export default function WebcamView({ onReady }: Props) {
   }, []);
 
   return (
-    <video
-      ref={videoRef}
-      autoPlay
-      playsInline
-      style={{
-        width: "100%",
-        maxWidth: "900px",
-        borderRadius: "20px",
-      }}
-    />
+    <div
+      className="
+        relative
+        w-full
+        max-w-[900px]
+      "
+    >
+      {/* Marco estilo Apple */}
+      <div
+        className="
+          rounded-[40px]
+
+          overflow-hidden
+
+          bg-black/5
+
+          shadow-[0_30px_80px_rgba(0,0,0,0.25)]
+
+          border border-white/30
+
+          backdrop-blur-2xl
+        "
+      >
+        <video
+          ref={videoRef}
+          autoPlay
+          playsInline
+          muted
+          className="
+            w-full
+            h-auto
+            object-cover
+            rounded-[40px]
+          "
+        />
+      </div>
+
+      {/* Glow suave tipo Vision Pro */}
+      <div
+        className="
+          absolute
+          inset-0
+          rounded-[40px]
+          pointer-events-none
+
+          shadow-[inset_0_0_60px_rgba(255,255,255,0.15)]
+        "
+      />
+    </div>
   );
 }

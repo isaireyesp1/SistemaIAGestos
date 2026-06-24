@@ -1,6 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import DancingCat from "../Pets/DancingCat";
 
+// 🧠 NUEVO: store del juego
+import { useGameStore } from "../../store/useGameStore";
+import { generatePuzzle } from "../../utils/generatePuzzle";
+
 interface Props {
   video: HTMLVideoElement | null;
 }
@@ -13,6 +17,11 @@ export default function GestureDetector({ video }: Props) {
 
   const lastX = useRef<number | null>(null);
   const actionLock = useRef(false);
+
+  // 🧠 STORE GLOBAL
+  const setMode = useGameStore((s) => s.setMode);
+  const setImage = useGameStore((s) => s.setImage);
+  const setPieces = useGameStore((s) => s.setPieces);
 
   useEffect(() => {
     if (!video) return;
@@ -52,7 +61,7 @@ export default function GestureDetector({ video }: Props) {
       const currentX = wrist.x;
 
       // =========================
-      // ✌️ FOTO (PEACE)
+      // ✌️ FOTO → AHORA ES PUZZLE
       // =========================
       const indexUp = landmarks[8].y < landmarks[6].y;
       const middleUp = landmarks[12].y < landmarks[10].y;
@@ -65,9 +74,15 @@ export default function GestureDetector({ video }: Props) {
       if (peaceGesture && !actionLock.current) {
         actionLock.current = true;
 
-        setGesture("✌️ Foto tomada");
+        setGesture("✌️ Creando rompecabezas...");
 
-        capturePhoto(video);
+        const image = capturePhoto(video);
+
+        if (image) {
+          setImage(image);
+          setPieces(generatePuzzle(image));
+          setMode("puzzle");
+        }
 
         setTimeout(() => {
           actionLock.current = false;
@@ -113,11 +128,12 @@ export default function GestureDetector({ video }: Props) {
     };
   }, [video]);
 
-  const capturePhoto = (video: HTMLVideoElement) => {
+  // 🧠 ahora devuelve la imagen
+  const capturePhoto = (video: HTMLVideoElement): string | null => {
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
 
-    if (!ctx) return;
+    if (!ctx) return null;
 
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
@@ -126,10 +142,7 @@ export default function GestureDetector({ video }: Props) {
 
     const image = canvas.toDataURL("image/png");
 
-    const link = document.createElement("a");
-    link.href = image;
-    link.download = `photo-${Date.now()}.png`;
-    link.click();
+    return image;
   };
 
   return (
@@ -192,7 +205,7 @@ export default function GestureDetector({ video }: Props) {
         </p>
 
         <div className="mt-3 space-y-2 text-sm text-gray-600 dark:text-gray-300">
-          <p>✌️ Tomar foto</p>
+          <p>✌️ Crear puzzle</p>
           <p>👋 Gatito bailarín</p>
         </div>
       </div>

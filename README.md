@@ -144,7 +144,7 @@ python src/main.py
 ```
 ### 🔄 Flujo del sistema
 
-
+```
 📷 Cámara web
       ↓
 🖐️ MediaPipe (detección de mano)
@@ -154,7 +154,7 @@ python src/main.py
 🎯 Clasificación del gesto
       ↓
 ⚡ Ejecución de acción
-
+```
 ---
 
 ## 🎯 Casos de uso

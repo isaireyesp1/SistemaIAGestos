@@ -174,17 +174,17 @@ python src/main.py
 ## 🎯 Casos de uso
 
 
-🎮 Control de videojuegos con gestos
-🖥️ Interfaces sin mouse
-♿ Sistemas de accesibilidad
-🤖 Robótica controlada por gestos
-📱 Interacción humano-computadora
-📈 Futuras mejoras
-🌐 Versión web con WebRTC
-📱 App móvil con Flutter
-🧠 Entrenamiento en tiempo real
-🔊 Integración con voz + gestos
-☁️ API cloud para predicción
+- 🎮 Control de videojuegos con gestos
+- 🖥️ Interfaces sin mouse
+- ♿ Sistemas de accesibilidad
+- 🤖 Robótica controlada por gestos
+- 📱Interacción humano-computadora
+- 📈 Futuras mejoras
+- 🌐 Versión web con WebRTC
+- 📱 App móvil con Flutter
+- 🧠 Entrenamiento en tiempo real
+- 🔊 Integración con voz + gestos
+- ☁️ API cloud para predicción
 
 👨‍💻 Fundador
 <div align="center"> <img width="140" src="https://github.com/isairey.png" />

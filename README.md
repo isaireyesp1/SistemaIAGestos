@@ -108,7 +108,7 @@ El proyecto fue desarrollado para practicar:
 # 📂 Estructura del Proyecto
 
 ```bash
-AI-Gesture-System/
+SistemaIAGestos/
 │
 ├── data/               # Dataset de gestos
 ├── models/             # Modelos entrenados
